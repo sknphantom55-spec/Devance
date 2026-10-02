@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>KSMI // MATRIX TRANSPARENT</title>
+    <style>
+        /* --- RESET & CORE --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            font-family: 'Courier New', Courier, monospace;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* --- MATRIX RAIN CANVAS --- */
+        #matrix-canvas {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 1;
+        }
+
+        /* --- MAIN LAYOUT --- */
+        .main-container {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* LOGO AREA */
+        .logo-area {
+            flex: 5.5; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            min-height: 0;
+        }
+
+        .logo-area img {
+            max-width: 95%;
+            max-height: 60vh; 
+            object-fit: contain;
+            filter: contrast(1.1) brightness(1.05);
+        }
+
+        /* MESSAGE AREA: TRANSPARAN TOTAL */
+        .message-area {
+            flex: 4.5;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px 25px;
+            margin: 0 15px 20px 15px;
+            
+            /* HAPUS BACKGROUND HITAM SOLID */
+            background: transparent; 
+            backdrop-filter: none;
+            
+            /* Border tipis opsional untuk batas area */
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            overflow-y: auto;
+        }
+
+        .terminal-text {
+            font-size: clamp(0.7rem, 1.9vw, 0.95rem);
+            line-height: 1.6;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #ffffff; /* PUTIH BERSIH */
+            white-space: pre-wrap;
+            word-break: break-word;
+            
+            /* RAHASIA KETERBACAAN DI ATAS MATRIX: 
+               Bayangan hitam tebal di belakang teks */
+            text-shadow: 
+                2px 2px 0px #000000, 
+                -1px -1px 0px #000000,  
+                1px -1px 0px #000000,
+                -1px 1px 0px #000000,
+                0px 0px 8px rgba(0,0,0,0.9);
+        }
+
+        .highlight {
+            color: #ffffff;
+            font-weight: bold;
+            text-decoration: underline;
+            text-underline-offset: 4px;
+            text-decoration-thickness: 1.5px;
+            animation: glitch-skew 4s infinite linear alternate-reverse;
+            /* Highlight juga punya shadow agar tidak hilang saat glitch */
+            text-shadow: 
+                2px 2px 0px #000000, 
+                0px 0px 10px rgba(0,0,0,1);
+        }
+
+        /* --- GLITCH ANIMATION --- */
+        @keyframes glitch-skew {
+            0% { transform: skew(0deg); }
+            20% { transform: skew(-2deg); opacity: 0.8; }
+            40% { transform: skew(2deg); opacity: 1; }
+            60% { transform: skew(-1deg); }
+            80% { transform: skew(1deg); opacity: 0.9; }
+            100% { transform: skew(0deg); }
+        }
+
+        /* --- SCANLINE EFFECT --- */
+        .scanline {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: repeating-linear-gradient(
+                to bottom,
+                transparent 0px,
+                transparent 2px,
+                rgba(0, 0, 0, 0.3) 2px,
+                rgba(0, 0, 0, 0.3) 4px
+            );
+            pointer-events: none;
+            z-index: 20;
+            opacity: 0.4;
+        }
+
+        /* --- RESPONSIVE --- */
+        @media (max-height: 600px) {
+            .logo-area { flex: 5; padding: 10px; }
+            .logo-area img { max-height: 50vh; }
+            .message-area { flex: 5; padding: 15px; margin: 0 10px 10px 10px; }
+            .terminal-text { font-size: 0.65rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Matrix Rain Background -->
+    <canvas id="matrix-canvas"></canvas>
+    
+    <!-- Scanlines Overlay -->
+    <div class="scanline"></div>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        
+        <!-- LOGO SECTION -->
+        <div class="logo-area">
+            <a href="https://ibb.co.com/MxqB167V" target="_blank" rel="noopener noreferrer">
+                <img src="https://i.ibb.co.com/8LFYxc95/1788089918030.jpg" alt="EROP x H.C.G Team Banner">
+            </a>
+        </div>
+
+        <!-- MESSAGE SECTION (TRANSPARAN TOTAL) -->
+        <div class="message-area">
+            <div class="terminal-text">SORRY WE WERE FORCED TO DO THIS.
+BEFORE WE HAVE REPORTED THE DEFECT BUT THERE WAS NO RESPONSE.
+
+<span class="highlight">KSMI WAS FORCED TO DO THIS.</span>
+
+IF ADMIN/OWNER/EMPLOYEES SAW KSMI'S UNREASONABLE ACTIONS, 
+WE REALLY REALLY I AM VERY SORRY AND YOU MUST FIX THESE 
+DEFECTS/BUGS SO THAT THIS OR UNWANTED RESULTS DOES NOT OCCUR.</div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- MATRIX RAIN SCRIPT ---
+        const canvas = document.getElementById('matrix-canvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            initDrops();
+        }
+        
+        const chars = 'アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムユュルグズブヅプエェケセテネヘメレゲゼデベペオォコソトノホモヨョロヲゴゾドボポヴッン0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const charArray = chars.split('');
+        const fontSize = 14;
+        let columns = Math.floor(canvas.width / fontSize);
+        let drops = [];
+
+        function initDrops() {
+            columns = Math.floor(canvas.width / fontSize);
+            drops = [];
+            for (let i = 0; i < columns; i++) {
+                drops[i] = Math.random() * -100;
+            }
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        function draw() {
+            // Trail effect
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.font = fontSize + 'px monospace';
+
+            for (let i = 0; i < drops.length; i++) {
+                const text = charArray[Math.floor(Math.random() * charArray.length)];
+                
+                // 98% Hijau Matrix, 2% Putih untuk efek kilatan data
+                if (Math.random() > 0.98) {
+                    ctx.fillStyle = '#FFFFFF';
+                } else {
+                    ctx.fillStyle = '#00FF00';
+                }
+
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+
+        setInterval(draw, 35);
+    </script>
+
+</body>
+</html>
